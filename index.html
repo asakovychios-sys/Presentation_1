@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Предложение по интеграции машинного обучения в приложение для анализа трафика, удержания пользователей и монетизации.">
+    <meta name="keywords" content="машинное обучение, ML, приложение, трафик, удержание, монетизация, фрод">
+    <meta name="author" content="Grok by xAI">
+    <title>Предложение по интеграции ML</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --gray-dark: #111827;
+            --gray: #1f2937;
+            --gray-light: #6b7280;
+            --gray-lighter: #d1d5db;
+            --status-fraud: #EF4444;
+            --status-suspicious: #F59E0B;
+            --status-check: #6B7280;
+            --status-approved: #10B981;
+            --status-high-value: #3B82F6;
+            --status-top: #FFD700;
+            --value-highlight: #FFD700;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--white); color: var(--gray-dark); scroll-behavior: smooth; }
+        h1, h2, h3 { font-weight: 700; }
+        table { font-family: 'JetBrains Mono', monospace; width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; background-color: var(--white); }
+        th, td { padding: 16px; text-align: left; font-size: 0.9rem; border-bottom: 1px solid var(--gray-lighter); }
+        th { background-color: var(--gray); color: var(--white); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }
+        th:hover { background-color: var(--gray-dark); }
+        th.sortable::after { content: '\f0dc'; font-family: 'Font Awesome 6 Free'; font-weight: 900; margin-left: 8px; font-size: 0.8rem; opacity: 0.6; }
+        th.sort-asc::after { content: '\f0de'; }
+        th.sort-desc::after { content: '\f0dd'; }
+        td { background-color: var(--white); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: normal; }
+        tr:nth-child(even) td { background-color: #f9fafb; }
+        tr:hover td { background-color: var(--gray-lighter); transition: background-color 0.3s ease; }
+        .status-fraud { color: var(--status-fraud); }
+        .status-suspicious { color: var(--status-suspicious); }
+        .status-check { color: var(--status-check); }
+        .status-approved { color: var(--status-approved); }
+        .status-high-value { color: var(--status-high-value); }
+        .status-top { color: var(--status-top); }
+        .status-fraud, .status-suspicious, .status-check, .status-approved, .status-high-value, .status-top { font-weight: 600; }
+        .value-section { background-color: var(--gray); color: var(--white); padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 0.5rem; }
+        .value-section i { color: var(--value-highlight); }
+        .value-underline { border-bottom: 2px solid var(--value-highlight); padding-bottom: 4px; }
+        .section { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; margin-bottom: 3rem; }
+        .section.visible { opacity: 1; transform: translateY(0); }
+        .navbar { background-color: var(--gray-dark); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
+        .nav-link { color: var(--gray-lighter); transition: color 0.3s ease; }
+        .nav-link:hover { color: var(--white); text-decoration: underline; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
+        .hero { background-color: var(--gray-dark); color: var(--white); padding: 4rem 2rem; border-radius: 12px; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); margin-bottom: 3rem; }
+        footer { background-color: var(--gray-dark); color: var(--white); padding: 1.5rem 0; text-align: center; }
+        @media (max-width: 768px) {
+            .navbar ul { flex-direction: column; align-items: center; }
+            table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            th, td { font-size: 0.85rem; min-width: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar fixed top-0 w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-center">
+            <ul class="flex flex-wrap justify-center space-x-6 text-base font-medium">
+                <li><a href="#intro" class="nav-link">Введение</a></li>
+                <li><a href="#contents" class="nav-link">Содержание</a></li>
+                <li><a href="#section1" class="nav-link">1</a></li>
+                <li><a href="#section2" class="nav-link">2</a></li>
+                <li><a href="#section3" class="nav-link">3</a></li>
+                <li><a href="#section4" class="nav-link">4</a></li>
+                <li><a href="#section5" class="nav-link">5</a></li>
+                <li><a href="#section6" class="nav-link">6</a></li>
+                <li><a href="#section7" class="nav-link">7</a></li>
+                <li><a href="#section8" class="nav-link">8</a></li>
+                <li><a href="#section9" class="nav-link">9</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container bg-white shadow-2xl rounded-2xl mt-24 p-8">
+        <section id="intro" class="hero section rounded-2xl">
+            <h1 class="text-5xl font-bold mb-4">Предложение по интеграции машинного обучения (ML)</h1>
+            <p class="text-xl mb-4">
+                Документ предлагает идеи по внедрению ML для анализа трафика, удержания пользователей, монетизации и защиты от фрода на основе данных аналитических систем (Appsflyer, Adjust, Firebase)
+            </p>
+        </section>
+
+        <section id="contents" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-list-ul mr-3"></i>Содержание</h2>
+            <ul class="list-decimal list-inside text-gray-700 text-lg mb-6 space-y-2">
+                <li><a href="#section1" class="text-gray-600 hover:underline">Автоматическое выявление фрода и резких падений качества трафика</a></li>
+                <li><a href="#section2" class="text-gray-600 hover:underline">Выявление скрыто ценных источников</a></li>
+                <li><a href="#section3" class="text-gray-600 hover:underline">Выявление источников с отложенной ценностью (delayed LTV)</a></li>
+                <li><a href="#section4" class="text-gray-600 hover:underline">Выявление и отключение пустых партнеров</a></li>
+                <li><a href="#section5" class="text-gray-600 hover:underline">Предсказание выгорания и времени покидания приложения</a></li>
+                <li><a href="#section6" class="text-gray-600 hover:underline">ДНК игрока — динамический поведенческий профиль</a></li>
+                <li><a href="#section7" class="text-gray-600 hover:underline">Карта качества трафика по каналам</a></li>
+                <li><a href="#section8" class="text-gray-600 hover:underline">Профилирование источников на долгосрочный Retention Pattern</a></li>
+                <li><a href="#section9" class="text-gray-600 hover:underline">Предсказание VIP или платящих игроков (Whale Prediction)</a></li>
+            </ul>
+        </section>
+
+        <section id="section1" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-shield-alt mr-3"></i>1. Автоматическое выявление фрода и резких падений качества трафика</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Система определяет фрод (боты, клик-фермы) и падение качества трафика по данным установок и поведения.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: выявление фрода">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Девайс (модель, OS, IDFA/GAID, IP), гео, источник, сессии, события, LTV, Retention</td></tr>
+                    <tr><td>ML-анализ</td><td>Поиск аномалий (одинаковые IP, короткие сессии), падение Retention</td></tr>
+                    <tr><td>Реакция</td><td>Блокировка, уведомления, остановка кампаний</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Экономия бюджета</li><li>Чистая аналитика</li><li>Точный ROI</li><li>Защита репутации</li>
+            </ul>
+            <table aria-label="Примеры фрода">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Статус</th>
+                        <th scope="col">UserID</th>
+                        <th scope="col">Девайс</th>
+                        <th scope="col">IP-адрес</th>
+                        <th scope="col">Гео</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col" class="sortable" data-type="number">Сессия (сек)</th>
+                        <th scope="col" class="sortable" data-type="number">События</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D1</th>
+                        <th scope="col" class="sortable" data-type="currency">LTV (7д)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Фрод</td><td>100234</td><td>Redmi Note 8</td><td>192.168.0.14</td><td>PH</td><td>AdNetwork_X</td><td>7</td><td>0</td><td>0.0%</td><td>$0.00</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Фрод</td><td>100235</td><td>iPhone 8</td><td>192.168.0.14</td><td>PH</td><td>AdNetwork_X</td><td>5</td><td>0</td><td>0.0%</td><td>$0.00</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Подозрительный</td><td>100236</td><td>Samsung A12</td><td>10.15.32.5</td><td>IN</td><td>AdNetwork_Y</td><td>12</td><td>2</td><td>0.0%</td><td>$0.00</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Одобрен</td><td>100238</td><td>iPhone 15</td><td>77.34.21.45</td><td>US</td><td>Apple Search Ads</td><td>310</td><td>15</td><td>85.0%</td><td>$12.50</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section2" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-search-dollar mr-3"></i>2. Выявление скрыто ценных источников</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Источники с низкими конверсиями в первые 24 часа могут приносить крупных плательщиков через 7–30 дней.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: скрыто ценные источники">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Источник, гео, устройство, поведение (сессии, прогресс, действия)</td></tr>
+                    <tr><td>Когорты</td><td>Группа A: быстрые конверсии (≤24ч)<br>Группа B: отложенные конверсии (>7 дней)</td></tr>
+                    <tr><td>ML-анализ</td><td>Паттерны отложенных VIP, расчет LTV</td></tr>
+                    <tr><td>Прогноз</td><td>Сохранение источников с высоким D30 LTV</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Рост дохода</li><li>Максимизация ROI</li><li>Сохранение ценных источников</li><li>Оптимизация UA</li>
+            </ul>
+            <table aria-label="Скрыто ценные источники">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Статус</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col" class="sortable" data-type="number">Установки</th>
+                        <th scope="col" class="sortable" data-type="currency">D1 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D30 LTV</th>
+                        <th scope="col" class="sortable" data-type="percent">% VIP (D30)</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D1</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D30</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Высокая ценность</td><td>AdNetwork_X</td><td>1,200</td><td>$0.12</td><td>$3.45</td><td>4.2%</td><td>-92.0%</td><td>+58.0%</td></tr>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Топ</td><td>ASA (US)</td><td>3,400</td><td>$2.10</td><td>$5.25</td><td>5.1%</td><td>+35.0%</td><td>+102.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Отключить</td><td>AdNetwork_Z</td><td>700</td><td>$0.20</td><td>$0.25</td><td>0.1%</td><td>-80.0%</td><td>-72.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section3" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-clock mr-3"></i>3. Выявление источников с отложенной ценностью (delayed LTV)</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Некоторые источники приносят высокий LTV через 2–6 недель, несмотря на низкую начальную выручку. Аналитика помогает их выявить и усилить.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: отложенная ценность">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Анализ данных</td><td>Доход по когортам (D1, D7, D30, D60), LTV, ARPU, Time-to-first-purchase, Retention, гео, тип трафика</td></tr>
+                    <tr><td>ML-анализ</td><td>Кривые роста LTV, прогноз ROI</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Рост дохода</li><li>Сохранение каналов</li><li>Рациональный бюджет</li><li>Прогнозные стратегии</li><li>Масштабирование</li>
+            </ul>
+            <table aria-label="Отложенная ценность">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Статус</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col" class="sortable" data-type="currency">D1 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D7 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D30 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D60 LTV</th>
+                        <th scope="col" class="sortable" data-type="number">Time-to-first-purchase (дни)</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D30</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D30</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D60</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Слабый старт, сильный рост</td><td>Facebook Ads GEO A</td><td>$0.15</td><td>$0.40</td><td>$1.20</td><td>$3.50</td><td>10</td><td>25.0%</td><td>-30.0%</td><td>+80.0%</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Средний рост</td><td>TikTok GEO B</td><td>$0.25</td><td>$0.80</td><td>$1.50</td><td>$2.00</td><td>4</td><td>18.0%</td><td>+10.0%</td><td>+35.0%</td></tr>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Медленный старт, топ</td><td>Google UAC GEO C</td><td>$0.10</td><td>$0.25</td><td>$1.00</td><td>$4.20</td><td>14</td><td>28.0%</td><td>-50.0%</td><td>+120.0%</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Стабильный рост</td><td>Органика GEO D</td><td>$0.30</td><td>$0.90</td><td>$2.00</td><td>$2.50</td><td>3</td><td>22.0%</td><td>+25.0%</td><td>+40.0%</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Удержание и допродажи</td><td>Кросс-промо GEO E</td><td>$0.05</td><td>$0.15</td><td>$0.60</td><td>$1.80</td><td>21</td><td>15.0%</td><td>-70.0%</td><td>+20.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section4" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-user-slash mr-3"></i>4. Выявление и отключение пустых партнеров</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Выявление источников с бесполезными установками (без онбординга, действий, платежей, с быстрым уходом) — фрод или низкое качество.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: пустые партнеры">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Конверсия Install → First Action, длительность сессий, покупки, Retention, гео, сигналы фрода</td></tr>
+                    <tr><td>ML/правила</td><td>Engagement Score за 24–72ч, отключение источников с низким Score</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Снижение расходов</li><li>Защита от фрода</li><li>Перераспределение бюджета</li><li>Повышение ROI</li>
+            </ul>
+            <table aria-label="Пустые партнеры">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Статус</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col" class="sortable" data-type="number">Установки</th>
+                        <th scope="col" class="sortable" data-type="percent">D1 Retention</th>
+                        <th scope="col" class="sortable" data-type="percent">D1 Purchases</th>
+                        <th scope="col" class="sortable" data-type="number">Сессия (сек)</th>
+                        <th scope="col" class="sortable" data-type="number">Engagement Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Отключить: Фрод</td><td>Partner A</td><td>5,000</td><td>1.2%</td><td>0.01%</td><td>15</td><td>2</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Проверка</td><td>Partner B</td><td>3,200</td><td>5.0%</td><td>0.10%</td><td>45</td><td>15</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Отключить: Мотивированный</td><td>Partner C</td><td>6,800</td><td>0.8%</td><td>0.00%</td><td>8</td><td>1</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Одобрен</td><td>Partner D</td><td>4,500</td><td>15.0%</td><td>0.50%</td><td>120</td><td>50</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Проверка</td><td>Partner E</td><td>2,700</td><td>4.5%</td><td>0.05%</td><td>40</td><td>12</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section5" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-fire mr-3"></i>5. Предсказание выгорания и времени покидания приложения</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">ML прогнозирует момент потери интереса пользователя для вмешательства с персональными уведомлениями или бонусами.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: предсказание выгорания">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Сессии, прогресс, повторяемость, Retention, пустые сессии, уведомления, гео</td></tr>
+                    <tr><td>ML/правила</td><td>Профиль активности, паттерны падения, прогноз Burnout Time, триггеры</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Увеличение LTV</li><li>Снижение потерь</li><li>Автоматические вмешательства</li><li>Улучшение UX</li>
+            </ul>
+            <table aria-label="Выгорание">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Риск выгорания</th>
+                        <th scope="col">Пользователь</th>
+                        <th scope="col" class="sortable" data-type="number">Сессий/день</th>
+                        <th scope="col" class="sortable" data-type="percent">Разнообразие (%)</th>
+                        <th scope="col" class="sortable" data-type="percent">Пустые сессии (%)</th>
+                        <th scope="col">Burnout Time</th>
+                        <th scope="col">Действие</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-fraud"><i class="fas fa-exclamation-triangle mr-2"></i>Высокий</td><td>User A</td><td>5</td><td>80.0%</td><td>5.0%</td><td>14 дней</td><td>VIP-задача</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Средний</td><td>User B</td><td>3</td><td>60.0%</td><td>15.0%</td><td>7 дней</td><td>Пуш</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Низкий</td><td>User C</td><td>7</td><td>90.0%</td><td>2.0%</td><td>30+ дней</td><td>Нет</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-exclamation-triangle mr-2"></i>Высокий</td><td>User D</td><td>2</td><td>40.0%</td><td>25.0%</td><td>5 дней</td><td>Скидка</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Средний</td><td>User E</td><td>4</td><td>55.0%</td><td>12.0%</td><td>10 дней</td><td>Контент</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section6" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-dna mr-3"></i>6. ДНК игрока — динамический поведенческий профиль</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Создание обновляемого профиля игрока для персонализации опыта и повышения retention.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: ДНК игрока">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Активность (бои, крафт, социальные функции), сессии, механики, прогресс, гео, реакции</td></tr>
+                    <tr><td>ML/правила</td><td>Кластеризация (KMeans, DBSCAN), теги профиля, персонализация UX</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Понимание аудитории</li><li>Персонализация</li><li>Идентификация плательщиков</li><li>Рост LTV</li>
+            </ul>
+            <table aria-label="ДНК игрока">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Профиль</th>
+                        <th scope="col">Игрок</th>
+                        <th scope="col" class="sortable" data-type="number">Время (нед)</th>
+                        <th scope="col" class="sortable" data-type="number">Сессии</th>
+                        <th scope="col">Стиль</th>
+                        <th scope="col">Покупки</th>
+                        <th scope="col">Соц. функции</th>
+                        <th scope="col">Рекомендации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>PvP Атакующий</td><td>Игрок 1</td><td>12</td><td>5/день</td><td>Агрессивный</td><td>Высокая</td><td>Низкое</td><td>PvP-события</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Исследователь</td><td>Игрок 2</td><td>6</td><td>3/день</td><td>Казуал</td><td>Низкая</td><td>Среднее</td><td>Ивенты исследования</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Социальный лидер</td><td>Игрок 3</td><td>15</td><td>6/день</td><td>Социальный</td><td>Средняя</td><td>Высокое</td><td>Групповые миссии</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Крафтер</td><td>Игрок 4</td><td>8</td><td>4/день</td><td>Крафтер</td><td>Низкая</td><td>Низкое</td><td>Ресурсы</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Гибрид</td><td>Игрок 5</td><td>10</td><td>5/день</td><td>Смешанный</td><td>Средняя</td><td>Среднее</td><td>Баланс геймплея</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section7" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-map-marked-alt mr-3"></i>7. Карта качества трафика по каналам</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Тепловая карта визуализирует эффективность трафика по каналам, гео и устройствам (конверсия, LTV, ROI).</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: карта качества трафика">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Источник, гео, устройство, конверсии, LTV, ROI, Retention, churn</td></tr>
+                    <tr><td>Анализ</td><td>Матрицы для тепловых карт, выделение зон, рекомендации</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Визуализация эффективности</li><li>Оптимизация бюджета</li><li>Выявление фрода</li><li>Повышение ROI</li>
+            </ul>
+            <table aria-label="Качество трафика">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Комментарий</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col">Гео</th>
+                        <th scope="col">Устройство</th>
+                        <th scope="col" class="sortable" data-type="percent">Конверсия</th>
+                        <th scope="col" class="sortable" data-type="currency">LTV (30 дней)</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D7</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Масштабировать</td><td>Facebook</td><td>США</td><td>iOS</td><td>12.5%</td><td>$15.30</td><td>120.0%</td><td>35.0%</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Оптимизировать</td><td>Google Ads</td><td>Германия</td><td>Android</td><td>8.0%</td><td>$9.50</td><td>85.0%</td><td>28.0%</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Высокая конверсия</td><td>TikTok</td><td>Бразилия</td><td>Android</td><td>10.2%</td><td>$12.00</td><td>110.0%</td><td>32.0%</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Возможный фрод</td><td>Organic</td><td>Индия</td><td>iOS</td><td>5.5%</td><td>$6.00</td><td>50.0%</td><td>22.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Отключить</td><td>Affiliate</td><td>Кипр</td><td>Android</td><td>3.2%</td><td>$4.20</td><td>30.0%</td><td>15.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section8" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-chart-line mr-3"></i>8. Профилирование источников на долгосрочный Retention Pattern</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">Анализ жизненных циклов пользователей по источникам для оптимизации стратегий.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: Retention Pattern">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Источник, хронология событий, Retention, churn, устройство, гео</td></tr>
+                    <tr><td>Анализ</td><td>Временные ряды, кластеризация (ранний churn, долгосрочное вовлечение), рекомендации</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Понимание поведения</li><li>Высокий Retention</li><li>Оптимизация маркетинга</li><li>Рост ROI</li>
+            </ul>
+            <table aria-label="Retention Pattern">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Комментарий</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D1</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D7</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D30</th>
+                        <th scope="col">Паттерн</th>
+                        <th scope="col" class="sortable" data-type="currency">LTV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Высокий initial</td><td>Facebook Ads</td><td>40.0%</td><td>18.0%</td><td>7.0%</td><td>Быстрый отвал</td><td>$12.50</td></tr>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Устойчивый рост</td><td>Google UAC</td><td>35.0%</td><td>22.0%</td><td>12.0%</td><td>Долгосрочное вовлечение</td><td>$18.00</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Низкий retention</td><td>TikTok Ads</td><td>30.0%</td><td>10.0%</td><td>4.0%</td><td>Ранний churn</td><td>$8.20</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Периодические возвращения</td><td>Organic</td><td>50.0%</td><td>25.0%</td><td>15.0%</td><td>Циклическое поведение</td><td>$20.10</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Возможен фрод</td><td>Partner X</td><td>20.0%</td><td>5.0%</td><td>2.0%</td><td>Плохой retention</td><td>$3.50</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section9" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-crown mr-3"></i>9. Предсказание VIP или платящих игроков (Whale Prediction)</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Идея:</h3>
+            <p class="text-gray-600 mb-4">ML предсказывает крупных плательщиков (VIP/whales) по поведению в первых сессиях.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>Как это работает:</h3>
+            <table aria-label="Как это работает: Whale Prediction">
+                <thead><tr><th scope="col" class="sortable">Шаг</th><th scope="col">Детали</th></tr></thead>
+                <tbody>
+                    <tr><td>Сбор данных</td><td>Сессии, прогресс, клики, бонусы, гео, источник</td></tr>
+                    <tr><td>Датасет</td><td>Лейблы: платежи >$X за 7/14/30 дней</td></tr>
+                    <tr><td>ML-модель</td><td>Логистическая регрессия, градиентный бустинг</td></tr>
+                    <tr><td>Прогноз</td><td>Вероятность VIP >0.7 → персональные сценарии</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Ценность:</h3>
+            <p class="value-underline text-gray-600 mb-4">Ключевые преимущества:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Таргетинг VIP</li><li>Рост LTV</li><li>Снижение затрат</li><li>Улучшение UX</li>
+            </ul>
+            <table aria-label="Whale Prediction">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">VIP Prediction</th>
+                        <th scope="col">User ID</th>
+                        <th scope="col" class="sortable" data-type="number">Сессия №</th>
+                        <th scope="col" class="sortable" data-type="number">Длина (мин)</th>
+                        <th scope="col" class="sortable" data-type="percent">Прогресс</th>
+                        <th scope="col" class="sortable" data-type="number">Клики</th>
+                        <th scope="col" class="sortable" data-type="number">Заходы (дн/нед)</th>
+                        <th scope="col">Бонусы</th>
+                        <th scope="col">Geo</th>
+                        <th scope="col">Источник</th>
+                        <th scope="col" class="sortable" data-type="percent">Вероятность VIP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Да</td><td>001</td><td>2</td><td>15</td><td>40.0%</td><td>50</td><td>5</td><td>Активно</td><td>US</td><td>Facebook Ads</td><td>85.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Нет</td><td>002</td><td>2</td><td>10</td><td>20.0%</td><td>20</td><td>2</td><td>Нет</td><td>RU</td><td>Organic</td><td>30.0%</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Да</td><td>003</td><td>3</td><td>25</td><td>70.0%</td><td>70</td><td>7</td><td>Активно</td><td>DE</td><td>Google UAC</td><td>92.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Нет</td><td>004</td><td>1</td><td>5</td><td>10.0%</td><td>15</td><td>1</td><td>Нет</td><td>IN</td><td>TikTok Ads</td><td>18.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Нет</td><td>005</td><td>3</td><td>18</td><td>50.0%</td><td>40</td><td>4</td><td>Частично</td><td>BR</td><td>Partner X</td><td>65.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-flag-checkered mr-3"></i>Заключение</h2>
+            <p class="text-gray-600 text-lg">
+                ML автоматизирует выявление фрода, оптимизирует трафик, прогнозирует поведение и повышает удержание, обеспечивая экономию бюджета, рост доходов и улучшение UX.
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-lg">&copy; 2025 ML Integration Proposal.</p>
+            <p class="text-sm mt-2"></p>
+        </div>
+    </footer>
+
+    <script>
+        // Плавное появление секций
+        const sections = document.querySelectorAll('.section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        sections.forEach(section => observer.observe(section));
+
+        // Плавная прокрутка
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Сортировка таблиц
+        document.querySelectorAll('th.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                const table = header.closest('table');
+                const tbody = table.querySelector('tbody');
+                const index = Array.from(header.parentNode.children).indexOf(header);
+                const dataType = header.dataset.type || 'string';
+                const isAsc = !header.classList.contains('sort-asc');
+
+                table.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
+
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const compare = (a, b) => {
+                    let aValue = a.children[index].textContent.trim();
+                    let bValue = b.children[index].textContent.trim();
+
+                    if (index === 0 && a.children[index].querySelector('i')) {
+                        aValue = aValue.replace(/^.*?\s/, '');
+                        bValue = bValue.replace(/^.*?\s/, '');
+                    }
+
+                    if (dataType === 'number') {
+                        return isAsc ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
+                    } else if (dataType === 'percent') {
+                        return isAsc ? parseFloat(aValue.replace('%', '')) - parseFloat(bValue.replace('%', '')) : parseFloat(bValue.replace('%', '')) - parseFloat(aValue.replace('%', ''));
+                    } else if (dataType === 'currency') {
+                        return isAsc ? parseFloat(aValue.replace('$', '')) - parseFloat(bValue.replace('$', '')) : parseFloat(bValue.replace('$', '')) - parseFloat(aValue.replace('$', ''));
+                    } else {
+                        return isAsc ? aValue.localeCompare(bValue, 'ru') : bValue.localeCompare(aValue, 'ru');
+                    }
+                };
+
+                rows.sort(compare);
+                tbody.innerHTML = '';
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    </script>
+</body>
+</html>
