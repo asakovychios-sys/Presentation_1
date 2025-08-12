@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Proposal for integrating machine learning into an application for traffic analysis, user retention, and monetization.">
+    <meta name="keywords" content="machine learning, ML, application, traffic, retention, monetization, fraud">
+    <meta name="author" content="Grok by xAI">
+    <title>ML Integration Proposal</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --gray-dark: #111827;
+            --gray: #1f2937;
+            --gray-light: #6b7280;
+            --gray-lighter: #d1d5db;
+            --status-fraud: #EF4444;
+            --status-suspicious: #F59E0B;
+            --status-check: #6B7280;
+            --status-approved: #10B981;
+            --status-high-value: #3B82F6;
+            --status-top: #FFD700;
+            --value-highlight: #FFD700;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--white); color: var(--gray-dark); scroll-behavior: smooth; }
+        h1, h2, h3 { font-weight: 700; }
+        table { font-family: 'JetBrains Mono', monospace; width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); margin-bottom: 2rem; background-color: var(--white); }
+        th, td { padding: 16px; text-align: left; font-size: 0.9rem; border-bottom: 1px solid var(--gray-lighter); }
+        th { background-color: var(--gray); color: var(--white); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease; }
+        th:hover { background-color: var(--gray-dark); }
+        th.sortable::after { content: '\f0dc'; font-family: 'Font Awesome 6 Free'; font-weight: 900; margin-left: 8px; font-size: 0.8rem; opacity: 0.6; }
+        th.sort-asc::after { content: '\f0de'; }
+        th.sort-desc::after { content: '\f0dd'; }
+        td { background-color: var(--white); max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: normal; }
+        tr:nth-child(even) td { background-color: #f9fafb; }
+        tr:hover td { background-color: var(--gray-lighter); transition: background-color 0.3s ease; }
+        .status-fraud { color: var(--status-fraud); }
+        .status-suspicious { color: var(--status-suspicious); }
+        .status-check { color: var(--status-check); }
+        .status-approved { color: var(--status-approved); }
+        .status-high-value { color: var(--status-high-value); }
+        .status-top { color: var(--status-top); }
+        .status-fraud, .status-suspicious, .status-check, .status-approved, .status-high-value, .status-top { font-weight: 600; }
+        .value-section { background-color: var(--gray); color: var(--white); padding: 8px 16px; border-radius: 6px; display: inline-block; margin-bottom: 0.5rem; }
+        .value-section i { color: var(--value-highlight); }
+        .value-underline { border-bottom: 2px solid var(--value-highlight); padding-bottom: 4px; }
+        .section { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; margin-bottom: 3rem; }
+        .section.visible { opacity: 1; transform: translateY(0); }
+        .navbar { background-color: var(--gray-dark); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
+        .nav-link { color: var(--gray-lighter); transition: color 0.3s ease; }
+        .nav-link:hover { color: var(--white); text-decoration: underline; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 3rem 1rem; }
+        .hero { background-color: var(--gray-dark); color: var(--white); padding: 4rem 2rem; border-radius: 12px; box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); margin-bottom: 3rem; }
+        footer { background-color: var(--gray-dark); color: var(--white); padding: 1.5rem 0; text-align: center; }
+        @media (max-width: 768px) {
+            .navbar ul { flex-direction: column; align-items: center; }
+            table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            th, td { font-size: 0.85rem; min-width: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar fixed top-0 w-full z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-center">
+            <ul class="flex flex-wrap justify-center space-x-6 text-base font-medium">
+                <li><a href="#intro" class="nav-link">Introduction</a></li>
+                <li><a href="#contents" class="nav-link">Table of Contents</a></li>
+                <li><a href="#section1" class="nav-link">1</a></li>
+                <li><a href="#section2" class="nav-link">2</a></li>
+                <li><a href="#section3" class="nav-link">3</a></li>
+                <li><a href="#section4" class="nav-link">4</a></li>
+                <li><a href="#section5" class="nav-link">5</a></li>
+                <li><a href="#section6" class="nav-link">6</a></li>
+                <li><a href="#section7" class="nav-link">7</a></li>
+                <li><a href="#section8" class="nav-link">8</a></li>
+                <li><a href="#section9" class="nav-link">9</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container bg-white shadow-2xl rounded-2xl mt-24 p-8">
+        <section id="intro" class="hero section rounded-2xl">
+            <h1 class="text-5xl font-bold mb-4">Machine Learning (ML) Integration Proposal</h1>
+            <p class="text-xl mb-4">
+                This document proposes ideas for integrating machine learning to enhance traffic analysis, user retention, monetization, and fraud protection based on data from analytical systems (Appsflyer, Adjust, Firebase).
+            </p>
+        </section>
+
+        <section id="contents" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-list-ul mr-3"></i>Table of Contents</h2>
+            <ul class="list-decimal list-inside text-gray-700 text-lg mb-6 space-y-2">
+                <li><a href="#section1" class="text-gray-600 hover:underline">Automated Fraud Detection and Sharp Traffic Quality Drops</a></li>
+                <li><a href="#section2" class="text-gray-600 hover:underline">Identifying Hidden High-Value Sources</a></li>
+                <li><a href="#section3" class="text-gray-600 hover:underline">Identifying Sources with Delayed Value (Delayed LTV)</a></li>
+                <li><a href="#section4" class="text-gray-600 hover:underline">Identifying and Disabling Low-Value Partners</a></li>
+                <li><a href="#section5" class="text-gray-600 hover:underline">Predicting Burnout and App Abandonment Time</a></li>
+                <li><a href="#section6" class="text-gray-600 hover:underline">Player DNA — Dynamic Behavioral Profile</a></li>
+                <li><a href="#section7" class="text-gray-600 hover:underline">Traffic Quality Map by Channels</a></li>
+                <li><a href="#section8" class="text-gray-600 hover:underline">Profiling Sources for Long-Term Retention Patterns</a></li>
+                <li><a href="#section9" class="text-gray-600 hover:underline">Predicting VIP or Paying Players (Whale Prediction)</a></li>
+            </ul>
+        </section>
+
+        <section id="section1" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-shield-alt mr-3"></i>1. Automated Fraud Detection and Sharp Traffic Quality Drops</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">The system identifies fraud (bots, click farms) and drops in traffic quality based on installation and behavior data.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: fraud detection">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Device (model, OS, IDFA/GAID, IP), geo, source, sessions, events, LTV, Retention</td></tr>
+                    <tr><td>ML Analysis</td><td>Anomaly detection (identical IPs, short sessions), Retention drops</td></tr>
+                    <tr><td>Response</td><td>Blocking, notifications, campaign suspension</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Cost savings</li><li>Clean analytics</li><li>Accurate ROI</li><li>Reputation protection</li>
+            </ul>
+            <table aria-label="Fraud examples">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Status</th>
+                        <th scope="col">UserID</th>
+                        <th scope="col">Device</th>
+                        <th scope="col">IP Address</th>
+                        <th scope="col">Geo</th>
+                        <th scope="col">Source</th>
+                        <th scope="col" class="sortable" data-type="number">Session (sec)</th>
+                        <th scope="col" class="sortable" data-type="number">Events</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D1</th>
+                        <th scope="col" class="sortable" data-type="currency">LTV (7d)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Fraud</td><td>100234</td><td>Redmi Note 8</td><td>192.168.0.14</td><td>PH</td><td>AdNetwork_X</td><td>7</td><td>0</td><td>0.0%</td><td>$0.00</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Fraud</td><td>100235</td><td>iPhone 8</td><td>192.168.0.14</td><td>PH</td><td>AdNetwork_X</td><td>5</td><td>0</td><td>0.0%</td><td>$0.00</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Suspicious</td><td>100236</td><td>Samsung A12</td><td>10.15.32.5</td><td>IN</td><td>AdNetwork_Y</td><td>12</td><td>2</td><td>0.0%</td><td>$0.00</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Approved</td><td>100238</td><td>iPhone 15</td><td>77.34.21.45</td><td>US</td><td>Apple Search Ads</td><td>310</td><td>15</td><td>85.0%</td><td>$12.50</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section2" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-search-dollar mr-3"></i>2. Identifying Hidden High-Value Sources</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">Sources with low conversions in the first 24 hours may yield high-value payers after 7–30 days.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: hidden high-value sources">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Source, geo, device, behavior (sessions, progress, actions)</td></tr>
+                    <tr><td>Cohorts</td><td>Group A: Quick conversions (≤24h)<br>Group B: Delayed conversions (>7 days)</td></tr>
+                    <tr><td>ML Analysis</td><td>Patterns of delayed VIPs, LTV calculation</td></tr>
+                    <tr><td>Forecast</td><td>Retain sources with high D30 LTV</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Revenue growth</li><li>ROI maximization</li><li>Retention of valuable sources</li><li>UA optimization</li>
+            </ul>
+            <table aria-label="Hidden high-value sources">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Status</th>
+                        <th scope="col">Source</th>
+                        <th scope="col" class="sortable" data-type="number">Installs</th>
+                        <th scope="col" class="sortable" data-type="currency">D1 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D30 LTV</th>
+                        <th scope="col" class="sortable" data-type="percent">% VIP (D30)</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D1</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D30</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>High Value</td><td>AdNetwork_X</td><td>1,200</td><td>$0.12</td><td>$3.45</td><td>4.2%</td><td>-92.0%</td><td>+58.0%</td></tr>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Top</td><td>ASA (US)</td><td>3,400</td><td>$2.10</td><td>$5.25</td><td>5.1%</td><td>+35.0%</td><td>+102.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Disable</td><td>AdNetwork_Z</td><td>700</td><td>$0.20</td><td>$0.25</td><td>0.1%</td><td>-80.0%</td><td>-72.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section3" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-clock mr-3"></i>3. Identifying Sources with Delayed Value (Delayed LTV)</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">Some sources yield high LTV after 2–6 weeks despite low initial revenue. Analytics helps identify and scale them.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: delayed value">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Analysis</td><td>Revenue by cohorts (D1, D7, D30, D60), LTV, ARPU, Time-to-first-purchase, Retention, geo, traffic type</td></tr>
+                    <tr><td>ML Analysis</td><td>LTV growth curves, ROI forecasting</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Revenue growth</li><li>Channel retention</li><li>Rational budgeting</li><li>Predictive strategies</li><li>Scaling</li>
+            </ul>
+            <table aria-label="Delayed value">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Status</th>
+                        <th scope="col">Source</th>
+                        <th scope="col" class="sortable" data-type="currency">D1 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D7 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D30 LTV</th>
+                        <th scope="col" class="sortable" data-type="currency">D60 LTV</th>
+                        <th scope="col" class="sortable" data-type="number">Time-to-first-purchase (days)</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D30</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D30</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI D60</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Weak start, strong growth</td><td>Facebook Ads GEO A</td><td>$0.15</td><td>$0.40</td><td>$1.20</td><td>$3.50</td><td>10</td><td>25.0%</td><td>-30.0%</td><td>+80.0%</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Moderate growth</td><td>TikTok GEO B</td><td>$0.25</td><td>$0.80</td><td>$1.50</td><td>$2.00</td><td>4</td><td>18.0%</td><td>+10.0%</td><td>+35.0%</td></tr>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Slow start, top</td><td>Google UAC GEO C</td><td>$0.10</td><td>$0.25</td><td>$1.00</td><td>$4.20</td><td>14</td><td>28.0%</td><td>-50.0%</td><td>+120.0%</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Stable growth</td><td>Organic GEO D</td><td>$0.30</td><td>$0.90</td><td>$2.00</td><td>$2.50</td><td>3</td><td>22.0%</td><td>+25.0%</td><td>+40.0%</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Retention and upsells</td><td>Cross-promo GEO E</td><td>$0.05</td><td>$0.15</td><td>$0.60</td><td>$1.80</td><td>21</td><td>15.0%</td><td>-70.0%</td><td>+20.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section4" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-user-slash mr-3"></i>4. Identifying and Disabling Low-Value Partners</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">Identifying sources with useless installs (no onboarding, actions, payments, quick churn) — fraud or low quality.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: low-value partners">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Conversion Install → First Action, session duration, purchases, Retention, geo, fraud signals</td></tr>
+                    <tr><td>ML/Rules</td><td>Engagement Score within 24–72h, disabling sources with low Score</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Cost reduction</li><li>Fraud protection</li><li>Budget reallocation</li><li>ROI improvement</li>
+            </ul>
+            <table aria-label="Low-value partners">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Status</th>
+                        <th scope="col">Source</th>
+                        <th scope="col" class="sortable" data-type="number">Installs</th>
+                        <th scope="col" class="sortable" data-type="percent">D1 Retention</th>
+                        <th scope="col" class="sortable" data-type="percent">D1 Purchases</th>
+                        <th scope="col" class="sortable" data-type="number">Session (sec)</th>
+                        <th scope="col" class="sortable" data-type="number">Engagement Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Disable: Fraud</td><td>Partner A</td><td>5,000</td><td>1.2%</td><td>0.01%</td><td>15</td><td>2</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Review</td><td>Partner B</td><td>3,200</td><td>5.0%</td><td>0.10%</td><td>45</td><td>15</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Disable: Incentivized</td><td>Partner C</td><td>6,800</td><td>0.8%</td><td>0.00%</td><td>8</td><td>1</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Approved</td><td>Partner D</td><td>4,500</td><td>15.0%</td><td>0.50%</td><td>120</td><td>50</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Review</td><td>Partner E</td><td>2,700</td><td>4.5%</td><td>0.05%</td><td>40</td><td>12</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section5" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-fire mr-3"></i>5. Predicting Burnout and App Abandonment Time</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">ML predicts when users lose interest, enabling interventions with personalized notifications or bonuses.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: burnout prediction">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Sessions, progress, repetitiveness, Retention, empty sessions, notifications, geo</td></tr>
+                    <tr><td>ML/Rules</td><td>Activity profile, drop patterns, Burnout Time forecast, triggers</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Increased LTV</li><li>Reduced churn</li><li>Automated interventions</li><li>Improved UX</li>
+            </ul>
+            <table aria-label="Burnout">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Burnout Risk</th>
+                        <th scope="col">User</th>
+                        <th scope="col" class="sortable" data-type="number">Sessions/Day</th>
+                        <th scope="col" class="sortable" data-type="percent">Diversity (%)</th>
+                        <th scope="col" class="sortable" data-type="percent">Empty Sessions (%)</th>
+                        <th scope="col">Burnout Time</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-fraud"><i class="fas fa-exclamation-triangle mr-2"></i>High</td><td>User A</td><td>5</td><td>80.0%</td><td>5.0%</td><td>14 days</td><td>VIP task</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Medium</td><td>User B</td><td>3</td><td>60.0%</td><td>15.0%</td><td>7 days</td><td>Push</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Low</td><td>User C</td><td>7</td><td>90.0%</td><td>2.0%</td><td>30+ days</td><td>None</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-exclamation-triangle mr-2"></i>High</td><td>User D</td><td>2</td><td>40.0%</td><td>25.0%</td><td>5 days</td><td>Discount</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Medium</td><td>User E</td><td>4</td><td>55.0%</td><td>12.0%</td><td>10 days</td><td>Content</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section6" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-dna mr-3"></i>6. Player DNA — Dynamic Behavioral Profile</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">Creating an updatable player profile for personalized experiences and improved retention.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: player DNA">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Activity (battles, crafting, social features), sessions, mechanics, progress, geo, reactions</td></tr>
+                    <tr><td>ML/Rules</td><td>Clustering (KMeans, DBSCAN), profile tags, UX personalization</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Audience understanding</li><li>Personalization</li><li>Payer identification</li><li>LTV growth</li>
+            </ul>
+            <table aria-label="Player DNA">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Profile</th>
+                        <th scope="col">Player</th>
+                        <th scope="col" class="sortable" data-type="number">Time (h/week)</th>
+                        <th scope="col" class="sortable" data-type="number">Sessions</th>
+                        <th scope="col">Style</th>
+                        <th scope="col">Purchases</th>
+                        <th scope="col">Social Features</th>
+                        <th scope="col">Recommendations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>PvP Attacker</td><td>Player 1</td><td>12</td><td>5/day</td><td>Aggressive</td><td>High</td><td>Low</td><td>PvP events</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Explorer</td><td>Player 2</td><td>6</td><td>3/day</td><td>Casual</td><td>Low</td><td>Medium</td><td>Exploration events</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Social Leader</td><td>Player 3</td><td>15</td><td>6/day</td><td>Social</td><td>Medium</td><td>High</td><td>Group missions</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Crafter</td><td>Player 4</td><td>8</td><td>4/day</td><td>Crafter</td><td>Low</td><td>Low</td><td>Resources</td></tr>
+                    <tr><td class="status-check"><i class="fas fa-question-circle mr-2"></i>Hybrid</td><td>Player 5</td><td>10</td><td>5/day</td><td>Mixed</td><td>Medium</td><td>Medium</td><td>Gameplay balance</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section7" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-map-marked-alt mr-3"></i>7. Traffic Quality Map by Channels</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">A heatmap visualizes traffic effectiveness by channels, geo, and devices (conversion, LTV, ROI).</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: traffic quality map">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Source, geo, device, conversions, LTV, ROI, Retention, churn</td></tr>
+                    <tr><td>Analysis</td><td>Matrices for heatmaps, zone highlighting, recommendations</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Performance visualization</li><li>Budget optimization</li><li>Fraud detection</li><li>ROI improvement</li>
+            </ul>
+            <table aria-label="Traffic quality">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Comment</th>
+                        <th scope="col">Source</th>
+                        <th scope="col">Geo</th>
+                        <th scope="col">Device</th>
+                        <th scope="col" class="sortable" data-type="percent">Conversion</th>
+                        <th scope="col" class="sortable" data-type="currency">LTV (30 days)</th>
+                        <th scope="col" class="sortable" data-type="percent">ROI</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D7</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Scale</td><td>Facebook</td><td>USA</td><td>iOS</td><td>12.5%</td><td>$15.30</td><td>120.0%</td><td>35.0%</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Optimize</td><td>Google Ads</td><td>Germany</td><td>Android</td><td>8.0%</td><td>$9.50</td><td>85.0%</td><td>28.0%</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>High conversion</td><td>TikTok</td><td>Brazil</td><td>Android</td><td>10.2%</td><td>$12.00</td><td>110.0%</td><td>32.0%</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Possible fraud</td><td>Organic</td><td>India</td><td>iOS</td><td>5.5%</td><td>$6.00</td><td>50.0%</td><td>22.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Disable</td><td>Affiliate</td><td>Cyprus</td><td>Android</td><td>3.2%</td><td>$4.20</td><td>30.0%</td><td>15.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section8" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-chart-line mr-3"></i>8. Profiling Sources for Long-Term Retention Patterns</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">Analyzing user lifecycles by source to optimize strategies.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: retention patterns">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Source, event timeline, Retention, churn, device, geo</td></tr>
+                    <tr><td>Analysis</td><td>Time series, clustering (early churn, long-term engagement), recommendations</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>Behavioral understanding</li><li>High Retention</li><li>Marketing optimization</li><li>ROI growth</li>
+            </ul>
+            <table aria-label="Retention patterns">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">Comment</th>
+                        <th scope="col">Source</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D1</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D7</th>
+                        <th scope="col" class="sortable" data-type="percent">Retention D30</th>
+                        <th scope="col">Pattern</th>
+                        <th scope="col" class="sortable" data-type="currency">LTV</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>High initial</td><td>Facebook Ads</td><td>40.0%</td><td>18.0%</td><td>7.0%</td><td>Quick drop</td><td>$12.50</td></tr>
+                    <tr><td class="status-top"><i class="fas fa-trophy mr-2"></i>Steady growth</td><td>Google UAC</td><td>35.0%</td><td>22.0%</td><td>12.0%</td><td>Long-term engagement</td><td>$18.00</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>Low retention</td><td>TikTok Ads</td><td>30.0%</td><td>10.0%</td><td>4.0%</td><td>Early churn</td><td>$8.20</td></tr>
+                    <tr><td class="status-high-value"><i class="fas fa-gem mr-2"></i>Periodic returns</td><td>Organic</td><td>50.0%</td><td>25.0%</td><td>15.0%</td><td>Cyclic behavior</td><td>$20.10</td></tr>
+                    <tr><td class="status-suspicious"><i class="fas fa-exclamation-triangle mr-2"></i>Possible fraud</td><td>Partner X</td><td>20.0%</td><td>5.0%</td><td>2.0%</td><td>Poor retention</td><td>$3.50</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="section9" class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-crown mr-3"></i>9. Predicting VIP or Paying Players (Whale Prediction)</h2>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-lightbulb mr-2"></i>Idea:</h3>
+            <p class="text-gray-600 mb-4">ML predicts high-value payers (VIP/whales) based on behavior in initial sessions.</p>
+            <h3 class="text-2xl font-semibold text-gray-700 mb-3 flex items-center"><i class="fas fa-cogs mr-2"></i>How It Works:</h3>
+            <table aria-label="How it works: whale prediction">
+                <thead><tr><th scope="col" class="sortable">Step</th><th scope="col">Details</th></tr></thead>
+                <tbody>
+                    <tr><td>Data Collection</td><td>Sessions, progress, clicks, bonuses, geo, source</td></tr>
+                    <tr><td>Dataset</td><td>Labels: payments >$X within 7/14/30 days</td></tr>
+                    <tr><td>ML Model</td><td>Logistic regression, gradient boosting</td></tr>
+                    <tr><td>Prediction</td><td>VIP probability >0.7 → personalized scenarios</td></tr>
+                </tbody>
+            </table>
+            <h3 class="value-section text-2xl font-semibold mb-3 flex items-center"><i class="fas fa-star mr-2"></i>Value:</h3>
+            <p class="value-underline text-gray-600 mb-4">Key Benefits:</p>
+            <ul class="list-disc list-inside text-gray-600 mb-6 space-y-1">
+                <li>VIP targeting</li><li>LTV growth</li><li>Cost reduction</li><li>Improved UX</li>
+            </ul>
+            <table aria-label="Whale prediction">
+                <thead>
+                    <tr>
+                        <th scope="col" class="sortable">VIP Prediction</th>
+                        <th scope="col">User ID</th>
+                        <th scope="col" class="sortable" data-type="number">Session #</th>
+                        <th scope="col" class="sortable" data-type="number">Length (min)</th>
+                        <th scope="col" class="sortable" data-type="percent">Progress</th>
+                        <th scope="col" class="sortable" data-type="number">Clicks</th>
+                        <th scope="col" class="sortable" data-type="number">Logins (days/week)</th>
+                        <th scope="col">Bonuses</th>
+                        <th scope="col">Geo</th>
+                        <th scope="col">Source</th>
+                        <th scope="col" class="sortable" data-type="percent">VIP Probability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Yes</td><td>001</td><td>2</td><td>15</td><td>40.0%</td><td>50</td><td>5</td><td>Active</td><td>US</td><td>Facebook Ads</td><td>85.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>No</td><td>002</td><td>2</td><td>10</td><td>20.0%</td><td>20</td><td>2</td><td>None</td><td>RU</td><td>Organic</td><td>30.0%</td></tr>
+                    <tr><td class="status-approved"><i class="fas fa-check-circle mr-2"></i>Yes</td><td>003</td><td>3</td><td>25</td><td>70.0%</td><td>70</td><td>7</td><td>Active</td><td>DE</td><td>Google UAC</td><td>92.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>No</td><td>004</td><td>1</td><td>5</td><td>10.0%</td><td>15</td><td>1</td><td>None</td><td>IN</td><td>TikTok Ads</td><td>18.0%</td></tr>
+                    <tr><td class="status-fraud"><i class="fas fa-ban mr-2"></i>No</td><td>005</td><td>3</td><td>18</td><td>50.0%</td><td>40</td><td>4</td><td>Partial</td><td>BR</td><td>Partner X</td><td>65.0%</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2 class="text-3xl font-semibold text-gray-800 mb-6 flex items-center"><i class="fas fa-flag-checkered mr-3"></i>Conclusion</h2>
+            <p class="text-gray-600 text-lg">
+                ML automates fraud detection, optimizes traffic, predicts behavior, and boosts retention, delivering cost savings, revenue growth, and improved UX.
+            </p>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-lg">&copy; 2025 ML Integration Proposal.</p>
+            <p class="text-sm mt-2">Generated by Grok by xAI</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth section appearance
+        const sections = document.querySelectorAll('.section');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        sections.forEach(section => observer.observe(section));
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Table sorting
+        document.querySelectorAll('th.sortable').forEach(header => {
+            header.addEventListener('click', () => {
+                const table = header.closest('table');
+                const tbody = table.querySelector('tbody');
+                const index = Array.from(header.parentNode.children).indexOf(header);
+                const dataType = header.dataset.type || 'string';
+                const isAsc = !header.classList.contains('sort-asc');
+
+                table.querySelectorAll('th').forEach(th => th.classList.remove('sort-asc', 'sort-desc'));
+                header.classList.add(isAsc ? 'sort-asc' : 'sort-desc');
+
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const compare = (a, b) => {
+                    let aValue = a.children[index].textContent.trim();
+                    let bValue = b.children[index].textContent.trim();
+
+                    if (index === 0 && a.children[index].querySelector('i')) {
+                        aValue = aValue.replace(/^.*?\s/, '');
+                        bValue = bValue.replace(/^.*?\s/, '');
+                    }
+
+                    if (dataType === 'number') {
+                        return isAsc ? parseFloat(aValue) - parseFloat(bValue) : parseFloat(bValue) - parseFloat(aValue);
+                    } else if (dataType === 'percent') {
+                        return isAsc ? parseFloat(aValue.replace('%', '')) - parseFloat(bValue.replace('%', '')) : parseFloat(bValue.replace('%', '')) - parseFloat(aValue.replace('%', ''));
+                    } else if (dataType === 'currency') {
+                        return isAsc ? parseFloat(aValue.replace('$', '')) - parseFloat(bValue.replace('$', '')) : parseFloat(bValue.replace('$', '')) - parseFloat(aValue.replace('$', ''));
+                    } else {
+                        return isAsc ? aValue.localeCompare(bValue, 'en') : bValue.localeCompare(aValue, 'en');
+                    }
+                };
+
+                rows.sort(compare);
+                tbody.innerHTML = '';
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    </script>
+</body>
+</html>
